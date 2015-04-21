@@ -21,26 +21,27 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
+//testing functionality
 
 
-app.get('/', 
+app.get('/',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
+app.get('/create',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
@@ -73,10 +74,42 @@ function(req, res) {
     }
   });
 });
-
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+
+app.get('/signup', function(req, res) {
+  res.render('signup');
+});
+
+
+
+app.post('/signup', function(request, response) {
+  // db.knex.select('*').from('users').where({username: request.body.username})
+  // .then(function(rows){
+  //   if(rows.length) return console.log("Account already exists");
+  // }).then()
+  db.knex('users').insert(request.body).then(function(newUser){
+    response.redirect(301, '/');
+  });
+
+});
+
+app.get('/login', function(req, res) {
+  res.render('login');
+});
+
+app.post('/login', function(request, response){
+  db.knex('users').where(request.body).then(function(user){
+    console.log(user)
+    if(user.length){
+      response.redirect(301, '/');
+    }else{
+      response.redirect(301, '/login')
+
+    }
+  });
+});
 
 
 
