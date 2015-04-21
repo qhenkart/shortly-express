@@ -14,13 +14,20 @@ var Link = require('../app/models/link');
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var xbeforeEach = function(){};
+var xbeforeEach = function(){
+  // new User({
+  //     'username': 'Phillip',
+  //     'password': 'Phillip'
+  // }).save().then(function(){
+  //   done();
+  // });
+};
 /************************************************************/
 
 
-describe('', function() {
+describe('checking logout', function() {
 
-  xbeforeEach(function() {
+  beforeEach(function() {
     // log out currently signed in user
     request('http://127.0.0.1:4568/logout', function(error, res, body) {});
 
@@ -41,10 +48,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
 
     // delete user Phillip from db so it can be created later for the test
@@ -53,10 +60,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
 
@@ -64,7 +71,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done){      // create a user that we can then log-in with
+    beforeEach(function(done){      // create a user that we can then log-in with
       new User({
           'username': 'Phillip',
           'password': 'Phillip'
@@ -213,7 +220,7 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  xdescribe('Priviledged Access:', function(){
+  describe('Priviledged Access:', function(){
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
@@ -238,7 +245,7 @@ describe('', function() {
 
   }); // 'Priviledged Access'
 
-  xdescribe('Account Creation:', function(){
+  describe('Account Creation:', function(){
 
     it('Signup creates a user record', function(done) {
       var options = {
@@ -291,40 +298,14 @@ describe('', function() {
     var requestWithSession = request.defaults({jar: true});
 
     beforeEach(function(done){
-      // new User({
-      //     'username': 'Phillip',
-      //     'password': 'Phillip'
-      // }).save().then(function(){
-      //   done()
-      // });
-
-
-      var options = {
-        'method': 'POST',
-        'uri': 'http://127.0.0.1:4568/signup',
-        'json': {
+      new User({
           'username': 'Phillip',
           'password': 'Phillip'
-        }
-      };
-
-      request(options, function(error, res, body) {
-        db.knex('users')
-          .where('username', '=', 'Phillip')
-          .then(function(res) {
-            if (res[0] && res[0]['username']) {
-              var user = res[0]['username'];
-            }
-            expect(user).to.equal('Phillip');
-            done();
-          }).catch(function(err) {
-            throw {
-              type: 'DatabaseError',
-              message: 'Failed to create test setup data'
-            };
-          });
+      }).save().then(function(){
+        done()
       });
-    })
+
+    });
 
     it('Logs in existing users', function(done) {
       var options = {
@@ -337,7 +318,6 @@ describe('', function() {
       };
 
       requestWithSession(options, function(error, res, body) {
-        console.log("THIS IS OUR CONSOLE", res.headers.location)
         expect(res.headers.location).to.equal('/');
         done();
       });

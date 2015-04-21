@@ -52,9 +52,8 @@ app.post('/links', function(req, res) {
 
   if (!util.isValidUrl(uri)) {
     console.log('Not a valid url: ', uri);
-    return res.send(404);
+    return res.send(404)
   }
-
   new Link({ url: uri }).fetch().then(function(found) {
     if (found) {
       res.send(200, found.attributes);
@@ -93,20 +92,7 @@ app.get('/logout', function(request, response){
   });
 });
 
-exports.login = login = function(request, response){
-  db.knex('users').where(request.body).then(function(user){
-    if(user.length){
-      request.session.regenerate(function(){
-        console.log(user[0])
-        request.session.user = user[0].username;
-        response.redirect(301, '/');
-      }); //set cookie
-    }else{
-      response.redirect(301, '/login')
-    }
-  });
 
-}
 
 // app.post('/signup', function(request, response) {
 
@@ -117,25 +103,27 @@ exports.login = login = function(request, response){
 // });
 //
 //
-app.post('/signup', function(req, res){
-  var thisUsername = req.body.username;
+app.post('/signup', function(request, response){
+  var thisUsername = request.body.username;
 
   new User({username: thisUsername}).fetch().then(function(found){
     if (found) {
-      res.send(201, found.attributes);
+      setSession(request, response, thisUsername, function(){
+        response.redirect(301, '/')
+      })
+
     } else {
-
-      var user = new User({username: thisUsername})
-      console.log(user)
-
-      user.save().then(function(newUser){
-        Users.add(newUser);
-        res.setHeader("location", "/")
-        res.send(201, newUser)
+      var user = new User({username: thisUsername});
+      setSession(request, response, thisUsername, function(){
+        user.save().then(function(newUser){
+          Users.add(newUser);
+          response.redirect(301, '/')
         });
 
-      }
+      });
 
+
+    }
   });
 });
 
@@ -144,11 +132,25 @@ app.get('/login', function(req, res) {
 });
 
 app.post('/login', function(request, response){
-  login(request, response);
+  db.knex('users').where(request.body).then(function(user){
+    if(user.length){
+      setSession(request, response, user[0].username, function(){
+
+        response.redirect(301, '/');
+      });
+    }else{
+      response.redirect(301, '/login')
+    }
+  });
 
 });
 
-
+function setSession(request, response, username, cb){
+  request.session.regenerate(function(){
+    request.session.user = username;
+    cb();
+  });
+}
 
 function restrict(req, res, next) {
   // console.log(JSON.stringify(req.session))
