@@ -25,23 +25,21 @@ app.use(express.static(__dirname + '/public'));
 //sessions
 // app.use(session({secret: "yourguy"}));
 app.use(session({
-    secret: "yourmom",
-    resave: true,
+    secret: "itsonlyasecret",
+    resave: false,
     saveUninitialized: true
 }));
 
 
-app.get('/', restrict, function(req, res) {
-  restrict(req, res, function(){
-    res.render('index');
-  });
-});
-
-app.get('/create', restrict, function(req, res) {
+app.get('/', util.checkUser, function(req, res) {
   res.render('index');
 });
 
-app.get('/links', restrict, function(req, res) {
+app.get('/create', util.checkUser, function(req, res) {
+  res.render('index');
+});
+
+app.get('/links', util.checkUser, function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
@@ -81,6 +79,9 @@ app.post('/links', function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/login', function(req, res) {
+  res.render('login');
+});
 
 app.get('/signup', function(req, res) {
   res.render('signup');
@@ -92,75 +93,45 @@ app.get('/logout', function(request, response){
   });
 });
 
-
-
-// app.post('/signup', function(request, response) {
-
-//   db.knex('users').insert(request.body).then(function(){
-//     login(request, response);
-//   });
-
-// });
-//
-//
-app.post('/signup', function(request, response){
-  var thisUsername = request.body.username;
-
-  new User({username: thisUsername}).fetch().then(function(found){
-    if (found) {
-      setSession(request, response, thisUsername, function(){
-        response.redirect(301, '/')
-      })
-
-    } else {
-      var user = new User({username: thisUsername});
-      setSession(request, response, thisUsername, function(){
-        user.save().then(function(newUser){
-          Users.add(newUser);
-          response.redirect(301, '/')
-        });
-
-      });
-
-
-    }
-  });
-});
-
-app.get('/login', function(req, res) {
-  res.render('login');
-});
-
 app.post('/login', function(request, response){
-  db.knex('users').where(request.body).then(function(user){
-    if(user.length){
-      setSession(request, response, user[0].username, function(){
+  var username = request.body.username;
+  var password = request.body.password;
 
-        response.redirect(301, '/');
-      });
-    }else{
+  new User({username: username}).fetch().then(function(user){
+    if(!user){
       response.redirect(301, '/login')
+    }else{
+      user.comparePassword(password, function(match){
+        if(match){
+          util.createSession(request, response, user);
+        }else{
+          response.redirect('/login')
+        }
+      });
+    }
+  });
+});
+
+app.post('/signup', function(request, response){
+  var username = request.body.username;
+  var password = request.body.password;
+
+  new User({username: username}).fetch().then(function(user){
+    if(!user){
+      var newUser = new User({
+        username: username,
+        password: password
+      });
+      newUser.save().then(function(savedUser){
+        util.createSession(request,response, savedUser);
+      });
+    }else {
+      console.log("Account already exists");
+      response.redirect('/signup');
     }
   });
 
 });
-
-function setSession(request, response, username, cb){
-  request.session.regenerate(function(){
-    request.session.user = username;
-    cb();
-  });
-}
-
-function restrict(req, res, next) {
-  // console.log(JSON.stringify(req.session))
-  if (req.session.user) {
-    next();
-  } else {
-    req.session.error = 'Access denied!';
-    res.redirect('/login');
-  }
-}
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
