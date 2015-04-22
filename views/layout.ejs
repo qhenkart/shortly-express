@@ -4,17 +4,27 @@
     <meta charset="utf-8" />
     <title>Shortly</title>
 
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <!-- <link rel="stylesheet" type="text/css" href="/lib/semantic.min.css"> -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="/style.css">
-
     <script src="/lib/jquery.js"></script>
     <script src="/lib/underscore.js"></script>
     <script src="/lib/backbone.js"></script>
     <script src="/lib/handlebars.js"></script>
+    <!-- <script src="/lib/semantic.min.js"></script> -->
 
   </head>
 
   <body>
-    <h1>Shortly</h1>
-    <%- body %>
+    <div class='navigation'>
+      <h1>Shortly</h1>
+    <ul>
+      <li><a href='#' class='index'>All Links</a></li>
+      <li><a href='#' class='create'>Shorten</a></li>
+      <li><a href='/logout' class='logout'>Log out</a></li>
+    </ul>
+    </div>
+      <%- body %>
   </body>
 </html>

@@ -1,7 +1,10 @@
 body {
   margin: 0;
   margin-top: 10px;
-  font-family: arial, sans-serif;
+  font-family: 'Roboto', sans-serif;
+  background-color: #CED4D9;
+  /*background-image: url(http://www.transparenttextures.com/patterns/blu-stripes.png);*/
+  background-repeat: repeat-x repeat-y;
 }
 
 a {
@@ -11,61 +14,97 @@ a {
 }
 
 h1 {
+  font-size: 40px;
+  display:inline;
+  padding: 10px;
+}
+h2 {
   font-style: italic;
   margin-bottom: 10px;
+  text-align: center;
+  font-size: 26px;
+  font-style: normal;
+}
+
+
+
+.fa {
+  font-size: 35px;
+  padding: 8px 15px 0 0;
+  float:left;
 }
 
 .navigation {
-  width: 100%;
-  height: 40px;
-  background-color: #eee;
+  width: 95%;
+  margin: 0 auto;
+  height: 45px;
+  background-color: #16a085;
+  box-shadow: 5px 5px 5px #888888;
+
+
 }
 
 .navigation ul {
   margin: 0;
   padding: 0;
   list-style: none;
+  display: inline-block;
+  float:right;
 }
 
 .navigation li {
-  float: left;
+  float: right;
+  display: inline-block;
+
 }
 
-.navigation .logout {
+.navigation li .logout {
   float: right;
 }
 
 .navigation li a , .logout {
   width: 100px;
-  height: 20px;
-  line-height: 20px;
+  height: 25px;
+  line-height: 25px;
   padding: 10px;
-  display: block;
+  display: inline-block;
   text-align: center;
 }
 
 .navigation li a:hover {
-  background-color: #ddd;
+  background-color: #1CCCAA;
+  transition: background-color .3s;
 }
 
 .navigation li a.selected {
-  background-color: #ccc;
+  background-color: #1EDBB6;
 }
 
 #container {
   clear: both;
   margin-top: 10px;
+  margin: 16px 65px;
+  margin-left: 30px;
 }
+
 
 .link {
   clear: both;
   margin-bottom: 5px;
   padding: 5px;
   min-height: 50px;
+  border-radius: 7px;
+  transition: background-color .3s;
+
+
+
 }
 
 .link:hover {
-  background-color: #efe;
+  background-color: rgba(149,165,166,0.7);
+  transition: background-color .3s;
+  border-radius: 7px;
+
 }
 
 .link img {
@@ -89,16 +128,20 @@ h1 {
 }
 
 .link .original {
-  color: #aaa;
+  color: #454545;
   font-size: 12px;
 }
 
 .link .info {
   margin-left: 55px;
 }
-
+.userlabel {
+  text-align: center;
+}
 form {
-  margin: 10px;
+  margin: 10px, auto;
+  display: inline-block;
+  text-align: center;
 }
 
 form input[type=text], form input[type=password] {
@@ -107,8 +150,14 @@ form input[type=text], form input[type=password] {
   font-size: 13px;
   padding: 5px;
   margin-bottom: 5px;
-}
+  margin: 10px auto;
+  text-align: center;
 
+}
+.inform{
+    display: table;
+    margin: 0 auto;
+}
 .error {
   background-color: #fee;
   color: #a33;
@@ -135,3 +184,4 @@ form input[type=text], form input[type=password] {
 .creator .message {
   clear: both;
 }
+
